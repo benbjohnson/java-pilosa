@@ -173,6 +173,7 @@ public class PilosaClient implements AutoCloseable {
         request.setRetrieveColumnAttributes(options.isColumns());
         request.setExcludeAttributes(options.isExcludeAttributes());
         request.setExcludeBits(options.isExcludeBits());
+        request.setSlices(options.getSlices());
         request.setQuery(query.serialize());
         return queryPath(request);
     }
@@ -660,6 +661,7 @@ class QueryRequest {
     private boolean retrieveColumnAttributes = false;
     private boolean excludeBits = false;
     private boolean excludeAttributes = false;
+    private List<Long> slices = new ArrayList<Long>();
 
     private QueryRequest(Index index) {
         this.index = index;
@@ -699,12 +701,17 @@ class QueryRequest {
         this.excludeAttributes = excludeAttributes;
     }
 
+    public void setSlices(List<Long> slices) {
+        this.slices = slices;
+    }
+
     Internal.QueryRequest toProtobuf() {
         return Internal.QueryRequest.newBuilder()
                 .setQuery(this.query)
                 .setColumnAttrs(this.retrieveColumnAttributes)
                 .setExcludeBits(this.excludeBits)
                 .setExcludeAttrs(this.excludeAttributes)
+                .addAllSlices(this.slices)
                 .build();
     }
 }
